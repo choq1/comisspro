@@ -1,0 +1,42 @@
+<div class="max-w-7xl mx-auto p-6">
+
+<h1 class="text-3xl font-bold mb-6">
+<%= @vendedor[:nome] %>
+</h1>
+
+<table class="w-full">
+
+<tr>
+<th>Produto</th>
+<th>Valor</th>
+<th>Comissão</th>
+<th>Data</th>
+</tr>
+
+<% @vendas.each do |v| %>
+
+<tr>
+
+<td>
+<%= v[:produto] %>
+</td>
+
+<td>
+<%= moeda(v[:valor]) %>
+</td>
+
+<td>
+<%= moeda(v[:comissao]) %>
+</td>
+
+<td>
+<%= v[:data] %>
+</td>
+
+</tr>
+
+<% end %>
+
+</table>
+
+</div>

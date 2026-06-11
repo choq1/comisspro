@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>ComissPro Enterprise</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-950 text-white min-h-screen">
+
+  <nav class="bg-slate-900 border-b border-slate-800">
+
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between">
+
+      <h1 class="font-bold text-emerald-400 text-xl">
+        ComissPro Enterprise
+      </h1>
+
+      <div class="flex gap-4">
+
+        <a href="/" class="text-slate-300 hover:text-white">
+          Dashboard
+        </a>
+
+        <% if session[:perfil] == 'admin' %>
+          <a href="/admin" class="text-emerald-400 hover:text-emerald-300">
+            Admin
+          </a>
+        <% end %>
+
+        <a href="/logout" class="text-red-400">
+          Sair
+        </a>
+
+      </div>
+
+    </div>
+
+  </nav>
+
+  <%= yield %>
+
+</body>
+</html>
