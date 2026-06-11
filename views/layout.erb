@@ -16,21 +16,27 @@
         ComissPro Enterprise
       </h1>
 
-      <div class="flex gap-4">
+    <div class="flex gap-4">
 
-        <a href="/" class="text-slate-300 hover:text-white">
-          Dashboard
-        </a>
+      <a href="/">
+      Dashboard
+      </a>
 
-        <% if session[:perfil] == 'admin' %>
-          <a href="/admin" class="text-emerald-400 hover:text-emerald-300">
-            Admin
-          </a>
-        <% end %>
+     <% if session[:perfil] == 'admin' %>
 
-        <a href="/logout" class="text-red-400">
-          Sair
-        </a>
+      <a href="/admin">
+      Admin
+      </a>
+
+     <a href="/usuarios">
+      Usuários
+      </a>
+
+      <% end %>
+
+      <a href="/logout">
+      Sair
+      </a>
 
       </div>
 

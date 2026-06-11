@@ -1,0 +1,51 @@
+<div class="max-w-4xl mx-auto p-6">
+
+<h1 class="text-2xl mb-6">
+Usuários
+</h1>
+
+<form action="/usuario" method="POST">
+
+<input
+name="nome"
+placeholder="Nome"
+class="w-full p-3 bg-slate-800 rounded mb-3">
+
+<input
+name="email"
+placeholder="Email"
+class="w-full p-3 bg-slate-800 rounded mb-3">
+
+<input
+name="senha"
+placeholder="Senha"
+class="w-full p-3 bg-slate-800 rounded mb-3">
+
+<select
+name="perfil"
+class="w-full p-3 bg-slate-800 rounded mb-3">
+
+<option value="vendedor">
+Vendedor
+</option>
+
+<option value="gerente">
+Gerente
+</option>
+
+<option value="admin">
+Admin
+</option>
+
+</select>
+
+<button
+class="bg-emerald-600 px-4 py-2 rounded">
+
+Criar Usuário
+
+</button>
+
+</form>
+
+</div>

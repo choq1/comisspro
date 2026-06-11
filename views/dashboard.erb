@@ -1,193 +1,159 @@
 <div class="max-w-7xl mx-auto p-6">
 
-<div class="grid md:grid-cols-5 gap-4 mb-8">
+  <div class="grid md:grid-cols-5 gap-4 mb-8">
+    <div class="bg-slate-900 p-6 rounded-xl">
+      <h3 class="text-slate-400">Total Vendido</h3>
+      <p class="text-3xl font-bold text-emerald-400">
+        <%= moeda(@total_vendas) %>
+      </p>
+    </div>
 
-<div class="bg-slate-900 p-6 rounded-xl">
-<h3 class="text-slate-400">Total Vendido</h3>
-<p class="text-3xl font-bold text-emerald-400">
-<%= moeda(@total_vendas) %>
-</p>
-</div>
+    <div class="bg-slate-900 p-6 rounded-xl">
+      <h3 class="text-slate-400">Total Comissão</h3>
+      <p class="text-3xl font-bold text-yellow-400">
+        <%= moeda(@total_comissao) %>
+      </p>
+    </div>
 
-<div class="bg-slate-900 p-6 rounded-xl">
-<h3 class="text-slate-400">Total Comissão</h3>
-<p class="text-3xl font-bold text-yellow-400">
-<%= moeda(@total_comissao) %>
-</p>
-</div>
+    <div class="bg-slate-900 p-6 rounded-xl">
+      <h3 class="text-slate-400">Vendedores</h3>
+      <p class="text-3xl font-bold">
+        <%= @vendedores.count %>
+      </p>
+    </div>
 
-<div class="bg-slate-900 p-6 rounded-xl">
-<h3 class="text-slate-400">Vendedores</h3>
-<p class="text-3xl font-bold">
-<%= @vendedores.count %>
-</p>
-</div>
+    <div class="bg-slate-900 p-6 rounded-xl">
+      <h3 class="text-slate-400">Meta Mensal</h3>
+      <p class="text-3xl font-bold text-purple-400">
+        <%= moeda(@meta) %>
+      </p>
+    </div>
 
-<div class="bg-slate-900 p-6 rounded-xl">
-<h3 class="text-slate-400">Meta Mensal</h3>
-<p class="text-3xl font-bold text-purple-400">
-<%= moeda(@meta) %>
-</p>
-</div>
+    <div class="bg-slate-900 p-6 rounded-xl">
+      <h3 class="text-slate-400">Ticket Médio</h3>
+      <p class="text-3xl font-bold text-cyan-400">
+        <%= moeda(@ticket_medio) %>
+      </p>
+    </div>
+  </div>
 
-<div class="bg-slate-900 p-6 rounded-xl">
-<h3 class="text-slate-400">Ticket Médio</h3>
-<p class="text-3xl font-bold text-cyan-400">
-<%= moeda(@ticket_medio) %>
-</p>
-</div>
+  <div class="bg-slate-900 p-6 rounded-xl mb-8">
+    <h3 class="mb-3 text-lg">Meta Comercial</h3>
+    <div class="w-full bg-slate-800 rounded-full h-5">
+      <div class="bg-emerald-500 h-5 rounded-full" style="width: <%= @percentual_meta %>%"></div>
+    </div>
+    <p class="mt-2 text-sm text-slate-400">
+      <%= @percentual_meta %>% da meta atingida
+    </p>
+  </div>
 
-<div class="bg-slate-900 p-6 rounded-xl mb-8">
+  <% if session[:perfil] == 'admin' || session[:perfil] == 'gerente' %>
+    <div class="bg-slate-900 p-6 rounded-xl mb-8">
+      <h2 class="text-xl mb-4">Cadastrar Vendedor</h2>
+      <form action="/vendedor" method="POST">
+        <input
+          name="nome"
+          placeholder="Nome"
+          class="w-full p-3 rounded bg-slate-800 mb-3">
+        <input
+          name="percentual"
+          placeholder="Comissão (%)"
+          type="number"
+          step="0.01"
+          class="w-full p-3 rounded bg-slate-800 mb-3">
+        <button class="bg-emerald-600 px-4 py-2 rounded w-full">
+          Cadastrar
+        </button>
+      </form>
+    </div>
+  <% end %>
 
-<h3 class="mb-3 text-lg">
-Meta Comercial
-</h3>
+  <% if session[:perfil] == 'vendedor' || session[:perfil] == 'admin' %>
+    <div class="bg-slate-900 p-6 rounded-xl mb-8">
+      <h2 class="text-xl mb-4">Registrar Venda</h2>
+      <form action="/venda" method="POST">
+        <select name="vendedor_id" class="w-full p-3 rounded bg-slate-800 mb-3">
+          <option value="">Selecione um vendedor</option>
+          <% @vendedores.each do |v| %>
+            <option value="<%= v[:id] %>">
+              <%= v[:nome] %> (<%= v[:percentual] %>%)
+            </option>
+          <% end %>
+        </select>
 
-<div class="w-full bg-slate-800 rounded-full h-5">
+        <input
+          name="produto"
+          placeholder="Produto vendido"
+          class="w-full p-3 rounded bg-slate-800 mb-3">
 
-<div
-class="bg-emerald-500 h-5 rounded-full"
-style="width:<%= @percentual_meta %>%">
+        <input
+          name="valor"
+          type="number"
+          step="0.01"
+          placeholder="Valor da venda"
+          class="w-full p-3 rounded bg-slate-800 mb-3">
 
-</div>
+        <input
+          name="custo"
+          type="number"
+          step="0.01"
+          placeholder="Custo"
+          class="w-full p-3 rounded bg-slate-800 mb-3">
 
-</div>
+        <button class="bg-blue-600 px-4 py-2 rounded w-full">
+          Registrar Venda
+        </button>
+      </form>
+    </div>
+  <% end %>
 
-<p class="mt-2 text-sm text-slate-400">
-<%= @percentual_meta %>% da meta atingida
-</p>
+  <div class="grid md:grid-cols-2 gap-6 mt-8">
+    <div class="bg-slate-900 p-6 rounded-xl">
+      <h2 class="text-xl mb-4">Ranking de Vendas</h2>
+      <% if @ranking.any? %>
+        <% @ranking.each_with_index do |v, i| %>
+          <div class="flex justify-between items-center py-3 border-b border-slate-800">
+            <div>
+              <span class="text-slate-400 mr-3">
+                <%= i + 1 %>º
+              </span>
+              <a href="/vendedor/<%= v[:id] %>" class="text-emerald-400 hover:text-emerald-300">
+                <%= v[:nome] %>
+              </a>
+            </div>
+            <span class="text-emerald-400 font-bold">
+              <%= moeda(v[:total]) %>
+            </span>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="text-slate-400">Nenhuma venda registrada</p>
+      <% end %>
+    </div>
 
-</div>
-
-</div>
-
-<div class="grid md:grid-cols-2 gap-6">
-
-<div class="bg-slate-900 p-6 rounded-xl">
-
-<h2 class="text-xl mb-4">
-Cadastrar Vendedor
-</h2>
-
-<form action="/vendedor" method="POST">
-
-<input
-name="nome"
-placeholder="Nome"
-class="w-full p-3 rounded bg-slate-800 mb-3">
-
-<input
-name="percentual"
-placeholder="Comissão (%)"
-class="w-full p-3 rounded bg-slate-800 mb-3">
-
-<button
-class="bg-emerald-600 px-4 py-2 rounded">
-Cadastrar
-</button>
-
-</form>
-
-</div>
-
-<div class="bg-slate-900 p-6 rounded-xl">
-
-<h2 class="text-xl mb-4">
-Registrar Venda
-</h2>
-
-<form action="/venda" method="POST">
-
-<select
-name="vendedor_id"
-class="w-full p-3 rounded bg-slate-800 mb-3">
-
-<% @vendedores.each do |v| %>
-
-<option value="<%= v[:id] %>">
-<%= v[:nome] %> (<%= v[:percentual] %>%)
-</option>
-
-<% end %>
-
-</select>
-
-<input
-name="produto"
-placeholder="Produto vendido"
-class="w-full p-3 rounded bg-slate-800 mb-3">
-
-<input
-name="valor"
-type="number"
-step="0.01"
-placeholder="Valor da venda"
-class="w-full p-3 rounded bg-slate-800 mb-3">
-
-<input
-name="custo"
-type="number"
-step="0.01"
-placeholder="Custo"
-class="w-full p-3 rounded bg-slate-800 mb-3">
-
-<button
-class="bg-blue-600 px-4 py-2 rounded w-full">
-Registrar Venda
-</button>
-
-</form>
-
-</div>
-
-</div>
-
-<div class="grid md:grid-cols-2 gap-6 mt-8">
-
-<div class="bg-slate-900 p-6 rounded-xl">
-
-<h2 class="text-xl mb-4">
-Ranking
-</h2>
-
-<% @ranking.each_with_index do |v, i| %>
-
-<div class="flex justify-between py-2 border-b border-slate-800">
-
-<span>
-<a href="/vendedor/<%= v[:id] %>">
-  <%= v[:nome] %>
-</a>
-</span>
-
-<span class="text-emerald-400">
-<%= moeda(v[:total]) %>
-</span>
+    <div class="bg-slate-900 p-6 rounded-xl">
+      <h2 class="text-xl mb-4">Histórico de Vendas</h2>
+      <div class="max-h-96 overflow-y-auto">
+        <% if @historico.any? %>
+          <% @historico.each do |venda| %>
+            <div class="flex justify-between items-center py-3 border-b border-slate-800 text-sm">
+              <div>
+                <p class="text-slate-300"><%= venda[:nome] %></p>
+                <p class="text-slate-500"><%= venda[:produto] %></p>
+              </div>
+              <p class="text-emerald-400 font-bold">
+                <%= moeda(venda[:valor]) %>
+              </p>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-slate-400">Nenhuma venda registrada</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
 
 </div>
-
-<% end %>
-
-</div>
-
-<div class="bg-slate-900 p-6 rounded-xl mb-8">
-
-<h3 class="mb-3 text-lg">
-Meta Comercial
-</h3>
-
-<div class="w-full bg-slate-800 rounded-full h-5">
-
-<div
-class="bg-emerald-500 h-5 rounded-full"
-style="width:<%= @percentual_meta %>%">
-
-</div>
-
-</div>
-
-<p class="mt-2 text-sm text-slate-400">
-<%= @percentual_meta %>% da meta atingida
 </p>
 
 </div>

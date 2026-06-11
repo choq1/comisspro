@@ -383,21 +383,13 @@ get '/exportar/pdf' do
 end
 =end
 
-get '/venda/excluir/:id' do
+post '/venda/excluir/:id' do
 
   redirect '/' unless session[:perfil] == 'admin'
 
   VENDAS
     .where(id: params[:id])
-    .update(
-      ativo: 0
-    )
-
-  DB[:auditoria].insert(
-    usuario: session[:usuario],
-    acao: "Excluiu venda #{params[:id]}",
-    data: Time.now
-  )
+    .update(ativo: 0)
 
   redirect '/admin'
 
@@ -405,19 +397,11 @@ end
 
 post '/vendedor/percentual' do
 
-  redirect '/' unless session[:perfil] == 'admin'
+  redirect '/' unless ['admin','gerente'].include?(session[:perfil])
 
   VENDEDORES
     .where(id: params[:id])
-    .update(
-      percentual: params[:percentual]
-    )
-
-  DB[:auditoria].insert(
-    usuario: session[:usuario],
-    acao: "Alterou comissão vendedor #{params[:id]}",
-    data: Time.now
-  )
+    .update(percentual: params[:percentual])
 
   redirect '/admin'
 
@@ -439,6 +423,7 @@ get '/vendedor/:id' do
   erb :vendedor_detalhe
 
 end
+
 get '/vendedor/:id/exportar' do
 
   vendas = DB.fetch("
@@ -459,3 +444,29 @@ get '/vendedor/:id/exportar' do
   )
 
 end
+
+get '/usuarios' do
+
+  redirect '/' unless session[:perfil] == 'admin'
+
+  @usuarios = DB[:usuarios].all
+
+  erb :usuarios
+
+end
+
+post '/usuario' do
+
+  redirect '/' unless session[:perfil] == 'admin'
+
+  DB[:usuarios].insert(
+    nome: params[:nome],
+    email: params[:email],
+    senha: params[:senha],
+    perfil: params[:perfil]
+  )
+
+  redirect '/usuarios'
+
+end
+
