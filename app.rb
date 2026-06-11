@@ -201,16 +201,14 @@ get '/admin' do
     ORDER BY vendas.id DESC
   ").all
 
+  @meta = DB[:metas]
+             .where(
+               mes: Time.now.month,
+               ano: Time.now.year
+             )
+             .first
+
   erb :admin
-
-  @meta =
-    DB[:metas]
-      .where(
-        mes: Time.now.month,
-        ano: Time.now.year
-      )
-      .first
-
 end
 # ==========================
 # VENDEDORES
