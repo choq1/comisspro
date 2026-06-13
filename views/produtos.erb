@@ -1,0 +1,89 @@
+<div class="max-w-7xl mx-auto p-6 text-white">
+
+  <h1 class="text-3xl font-bold mb-6 text-emerald-400">
+    Produtos
+  </h1>
+
+  <div class="bg-slate-900 p-6 rounded-xl mb-6">
+
+    <form action="/produto" method="POST">
+
+      <div class="grid md:grid-cols-5 gap-4">
+
+        <input
+          name="nome"
+          placeholder="Produto"
+          required
+          class="p-3 rounded bg-slate-800">
+
+        <input
+          name="categoria"
+          placeholder="Categoria"
+          required
+          class="p-3 rounded bg-slate-800">
+
+        <input
+          name="custo_kg"
+          placeholder="Custo/Kg"
+          required
+          class="p-3 rounded bg-slate-800">
+
+        <input
+          name="preco_kg"
+          placeholder="Preço/Kg"
+          required
+          class="p-3 rounded bg-slate-800">
+
+        <button
+          type="submit"
+          class="bg-emerald-600 rounded">
+
+          Cadastrar
+
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+  <div class="bg-slate-900 p-6 rounded-xl">
+
+    <table class="w-full">
+
+      <thead>
+
+        <tr class="border-b border-slate-800">
+
+          <th class="text-left py-2">Produto</th>
+          <th class="text-left py-2">Categoria</th>
+          <th class="text-left py-2">Custo</th>
+          <th class="text-left py-2">Preço</th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        <% @produtos.each do |p| %>
+
+          <tr class="border-b border-slate-800">
+
+            <td class="py-2"><%= p[:nome] %></td>
+            <td class="py-2"><%= p[:categoria] %></td>
+            <td class="py-2"><%= moeda(p[:custo_kg]) %></td>
+            <td class="py-2"><%= moeda(p[:preco_kg]) %></td>
+
+          </tr>
+
+        <% end %>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>

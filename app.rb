@@ -9,6 +9,12 @@ enable :sessions
 
 DB = Sequel.sqlite('database/comisspro.db')
 
+unless DB.schema(:vendedores).any? { |c| c[0] == :ativo }
+  DB.alter_table :vendedores do
+    add_column :ativo, Integer, default: 1
+  end
+end
+
 # Cria usuário admin caso não exista
 if DB.table_exists?(:usuarios)
   DB[:usuarios].insert(
@@ -92,14 +98,12 @@ get '/' do
   @vendedores = VENDEDORES.all
 
 @total_vendas =
-  VENDAS
-    .where(ativo: 1)
-    .sum(:valor) || 0
+  VENDAS.where(ativo: 1)
+        .sum(:valor) || 0
 
 @total_comissao =
-  VENDAS
-    .where(ativo: 1)
-    .sum(:comissao) || 0
+  VENDAS.where(ativo: 1)
+        .sum(:comissao) || 0
 
   mes = Time.now.month
   ano = Time.now.year
@@ -133,7 +137,8 @@ end
       vendas.produto,
       vendas.valor,
       vendas.comissao,
-      vendas.data
+      vendas.data,
+      vendas.ativo
     FROM vendas
     JOIN vendedores
       ON vendedores.id = vendas.vendedor_id
@@ -147,9 +152,8 @@ end
 
   @historico = DB.fetch(query).all
 
-  @ranking = DB.fetch("
+    @ranking = DB.fetch("
     SELECT
-      vendedores.id,
       vendedores.nome,
       SUM(vendas.valor) total
     FROM vendas
@@ -161,8 +165,11 @@ end
     LIMIT 5
   ").all
 
+  quantidade =
+    VENDAS.where(ativo: 1).count
+
   @ticket_medio =
-    (@total_vendas / [VENDAS.count, 1].max).round(2)
+    (@total_vendas / [quantidade, 1].max).round(2)
 
   @melhor_vendedor = DB.fetch("
     SELECT
@@ -171,6 +178,7 @@ end
     FROM vendas
     JOIN vendedores
       ON vendedores.id = vendas.vendedor_id
+    WHERE vendas.ativo = 1
     GROUP BY vendedores.nome
     ORDER BY total DESC
     LIMIT 1
@@ -184,7 +192,7 @@ get '/admin' do
 
   redirect '/' unless session[:perfil] == 'admin'
 
-  @vendedores = VENDEDORES.all
+  @vendedores = VENDEDORES.order(:nome).all
 
   @vendas = DB.fetch("
     SELECT
@@ -222,6 +230,32 @@ post '/vendedor' do
   )
 
   redirect '/'
+
+end
+
+
+post '/vendedor/excluir/:id' do
+
+  redirect '/' unless session[:perfil] == 'admin'
+
+  vendedor_id = params[:id].to_i
+
+  possui_vendas =
+    VENDAS.where(vendedor_id: vendedor_id)
+          .count
+
+  if possui_vendas > 0
+
+    redirect '/admin'
+
+  else
+
+    VENDEDORES.where(id: vendedor_id)
+              .delete
+
+    redirect '/admin'
+
+  end
 
 end
 
@@ -301,6 +335,40 @@ post '/meta' do
 
 end
 
+
+# ==========================
+# PRODUTOS
+# ==========================
+
+get '/produtos' do
+
+  redirect '/' unless ['admin','gerente'].include?(session[:perfil])
+
+  @produtos = DB[:produtos]
+                .order(:nome)
+                .all
+
+  erb :produtos
+
+end
+
+post '/produto' do
+
+  redirect '/' unless ['admin','gerente'].include?(session[:perfil])
+
+  DB[:produtos].insert(
+    nome: params[:nome],
+    categoria: params[:categoria],
+    custo_kg: params[:custo_kg],
+    preco_kg: params[:preco_kg],
+    estoque_kg: params[:estoque_kg],
+    estoque_minimo: params[:estoque_minimo],
+    ativo: 1
+  )
+
+  redirect '/produtos'
+
+end
 # ==========================
 # RELATÓRIO POR PERÍODO
 # ==========================
@@ -387,11 +455,11 @@ post '/venda/excluir/:id' do
 
   redirect '/' unless session[:perfil] == 'admin'
 
-  VENDAS
-    .where(id: params[:id])
-    .update(ativo: 0)
+VENDAS.where(id: params[:id]).update(
+  ativo: 0
+)
 
-  redirect '/admin'
+redirect '/admin'
 
 end
 
@@ -470,3 +538,26 @@ post '/usuario' do
 
 end
 
+post '/vendedor/desativar/:id' do
+
+  redirect '/' unless session[:perfil] == 'admin'
+
+  VENDEDORES
+    .where(id: params[:id])
+    .update(ativo: 0)
+
+  redirect '/admin'
+
+end
+
+post '/vendedor/ativar/:id' do
+
+  redirect '/' unless session[:perfil] == 'admin'
+
+  VENDEDORES
+    .where(id: params[:id])
+    .update(ativo: 1)
+
+  redirect '/admin'
+
+end
